@@ -2,130 +2,142 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Nilesh Quiz Game</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial;
-            background: #101827;
-            color: white;
-            text-align: center;
-            padding: 20px;
-        }
-        .container {
-            background: #1e293b;
-            padding: 25px;
-            border-radius: 15px;
-            max-width: 450px;
-            margin: 50px auto;
-        }
-        button {
-            display: block;
-            width: 100%;
-            padding: 13px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 8px;
-            background: #6366f1;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #4338ca;
-        }
-        #result {
-            font-size: 20px;
-            margin-top: 20px;
-        }
-    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nilesh Quiz Game</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(135deg, #141e30, #243b55);
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    .box {
+      background: white;
+      color: #222;
+      max-width: 450px;
+      margin: 40px auto;
+      padding: 25px;
+      border-radius: 18px;
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 9px;
+      background: #2878e8;
+      color: white;
+      font-size: 16px;
+    }
+    button:disabled { opacity: 0.7; }
+    #next { background: #159957; }
+    .small { color: #555; }
+  </style>
 </head>
 <body>
-
-<div class="container">
-    <h1>🎮 Nilesh Quiz Game</h1>
-    <h3 id="question">Welcome to Quiz Game!</h3>
-    <div id="answers"></div>
-    <p id="score"></p>
-    <button onclick="startQuiz()" id="start">Start Quiz</button>
-    <p id="result"></p>
-</div>
+  <h1>🎮 Nilesh Quiz Game</h1>
+  <div class="box">
+    <h2 id="level">Welcome!</h2>
+    <p id="progress">Test Your Knowledge</p>
+    <h3 id="question">Ready to Play?</h3>
+    <div id="options"></div>
+    <p id="feedback"></p>
+    <button id="start" onclick="startQuiz()">Start Quiz</button>
+    <button id="next" onclick="nextQuestion()" hidden>Next Question</button>
+  </div>
 
 <script>
 const questions = [
-    {
-        q: "What is the capital of India?",
-        a: ["Mumbai", "New Delhi", "Kolkata", "Chennai"],
-        correct: 1
-    },
-    {
-        q: "Which planet is known as the Red Planet?",
-        a: ["Earth", "Venus", "Mars", "Jupiter"],
-        correct: 2
-    },
-    {
-        q: "Who is known as the Father of Computers?",
-        a: ["Charles Babbage", "Newton", "Einstein", "Bill Gates"],
-        correct: 0
-    },
-    {
-        q: "How many days are there in a week?",
-        a: ["5", "6", "7", "8"],
-        correct: 2
-    },
-    {
-        q: "Which is the largest ocean?",
-        a: ["Indian", "Atlantic", "Arctic", "Pacific"],
-        correct: 3
-    }
+ {q:"What is the capital of India?",o:["Mumbai","Delhi","Kolkata","Chennai"],a:1,l:"Easy"},
+ {q:"How many days are in a week?",o:["5","6","7","8"],a:2,l:"Easy"},
+ {q:"Which planet is known as the Red Planet?",o:["Earth","Mars","Venus","Jupiter"],a:1,l:"Easy"},
+ {q:"What is 12 × 5?",o:["50","55","60","65"],a:2,l:"Easy"},
+ {q:"Which animal is called the King of the Jungle?",o:["Tiger","Lion","Elephant","Bear"],a:1,l:"Easy"},
+ {q:"Which is the largest ocean?",o:["Atlantic","Indian","Arctic","Pacific"],a:3,l:"Easy"},
+ {q:"How many colours are in a rainbow?",o:["5","6","7","8"],a:2,l:"Easy"},
+ {q:"Which gas do plants absorb?",o:["Oxygen","Carbon dioxide","Nitrogen","Hydrogen"],a:1,l:"Medium"},
+ {q:"What is the chemical symbol of water?",o:["CO2","O2","H2O","NaCl"],a:2,l:"Medium"},
+ {q:"Who is known as the Father of the Nation in India?",o:["Nehru","Gandhi","Bose","Patel"],a:1,l:"Medium"},
+ {q:"Which is the smallest prime number?",o:["0","1","2","3"],a:2,l:"Medium"},
+ {q:"How many sides does a hexagon have?",o:["5","6","7","8"],a:1,l:"Medium"},
+ {q:"Which organ pumps blood?",o:["Brain","Lungs","Heart","Kidney"],a:2,l:"Medium"},
+ {q:"What is the square of 13?",o:["156","169","179","196"],a:1,l:"Medium"},
+ {q:"Which is the fastest land animal?",o:["Lion","Horse","Cheetah","Deer"],a:2,l:"Hard"},
+ {q:"What is the currency of Japan?",o:["Dollar","Yen","Euro","Rupee"],a:1,l:"Hard"},
+ {q:"Which planet has the most famous rings?",o:["Mars","Saturn","Mercury","Earth"],a:1,l:"Hard"},
+ {q:"What is 144 divided by 12?",o:["10","11","12","14"],a:2,l:"Hard"},
+ {q:"Which is the largest continent?",o:["Africa","Europe","Asia","Australia"],a:2,l:"Hard"},
+ {q:"How many degrees are in a right angle?",o:["45","60","90","180"],a:2,l:"Hard"}
 ];
 
+let list = [];
 let current = 0;
-let points = 0;
+let score = 0;
+let answered = false;
 
 function startQuiz() {
-    current = 0;
-    points = 0;
-    document.getElementById("start").style.display = "none";
-    document.getElementById("result").innerText = "";
-    showQuestion();
+  list = [...questions].sort(() => Math.random() - 0.5);
+  current = 0;
+  score = 0;
+  document.getElementById("start").hidden = true;
+  showQuestion();
 }
 
 function showQuestion() {
-    if (current >= questions.length) {
-        document.getElementById("question").innerText = "Quiz Completed!";
-        document.getElementById("answers").innerHTML = "";
-        document.getElementById("score").innerText = "";
-        document.getElementById("result").innerText =
-            "Your Score: " + points + " / " + questions.length;
-        document.getElementById("start").innerText = "Play Again";
-        document.getElementById("start").style.display = "block";
-        return;
-    }
-
-    let q = questions[current];
-    document.getElementById("question").innerText =
-        (current + 1) + ". " + q.q;
-
-    document.getElementById("score").innerText =
-        "Score: " + points;
-
-    let html = "";
-    q.a.forEach((answer, index) => {
-        html += `<button onclick="checkAnswer(${index})">${answer}</button>`;
-    });
-
-    document.getElementById("answers").innerHTML = html;
+  answered = false;
+  let q = list[current];
+  document.getElementById("level").textContent = q.l + " Level";
+  document.getElementById("progress").textContent =
+    "Question " + (current+1) + " of " + list.length;
+  document.getElementById("question").textContent = q.q;
+  document.getElementById("feedback").textContent = "";
+  document.getElementById("next").hidden = true;
+  let area = document.getElementById("options");
+  area.innerHTML = "";
+  q.o.forEach((option, i) => {
+    let b = document.createElement("button");
+    b.textContent = option;
+    b.onclick = () => checkAnswer(i);
+    area.appendChild(b);
+  });
 }
 
-function checkAnswer(index) {
-    if (index === questions[current].correct) {
-        points++;
-    }
-    current++;
+function checkAnswer(i) {
+  if (answered) return;
+  answered = true;
+  let q = list[current];
+  if (i === q.a) {
+    score++;
+    document.getElementById("feedback").textContent = "✅ Correct Answer!";
+  } else {
+    document.getElementById("feedback").textContent =
+      "❌ Wrong! Correct answer: " + q.o[q.a];
+  }
+  document.querySelectorAll("#options button").forEach(b => b.disabled = true);
+  document.getElementById("next").hidden = false;
+  document.getElementById("next").textContent =
+    current === list.length - 1 ? "See Result" : "Next Question";
+}
+
+function nextQuestion() {
+  current++;
+  if (current < list.length) {
     showQuestion();
+  } else {
+    document.getElementById("level").textContent = "Quiz Completed! 🏆";
+    document.getElementById("progress").textContent = "Your Final Score";
+    document.getElementById("question").textContent =
+      score + " / " + list.length;
+    document.getElementById("options").innerHTML =
+      score >= 15 ? "Excellent Work! 🎉" : "Good Try! Keep Practising!";
+    document.getElementById("feedback").textContent = "";
+    document.getElementById("next").hidden = true;
+    document.getElementById("start").hidden = false;
+    document.getElementById("start").textContent = "Play Again";
+  }
 }
 </script>
-
 </body>
 </html>
