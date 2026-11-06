@@ -1,0 +1,131 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nilesh Quiz Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial;
+            background: #101827;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 15px;
+            max-width: 450px;
+            margin: 50px auto;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 13px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            background: #6366f1;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #4338ca;
+        }
+        #result {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎮 Nilesh Quiz Game</h1>
+    <h3 id="question">Welcome to Quiz Game!</h3>
+    <div id="answers"></div>
+    <p id="score"></p>
+    <button onclick="startQuiz()" id="start">Start Quiz</button>
+    <p id="result"></p>
+</div>
+
+<script>
+const questions = [
+    {
+        q: "What is the capital of India?",
+        a: ["Mumbai", "New Delhi", "Kolkata", "Chennai"],
+        correct: 1
+    },
+    {
+        q: "Which planet is known as the Red Planet?",
+        a: ["Earth", "Venus", "Mars", "Jupiter"],
+        correct: 2
+    },
+    {
+        q: "Who is known as the Father of Computers?",
+        a: ["Charles Babbage", "Newton", "Einstein", "Bill Gates"],
+        correct: 0
+    },
+    {
+        q: "How many days are there in a week?",
+        a: ["5", "6", "7", "8"],
+        correct: 2
+    },
+    {
+        q: "Which is the largest ocean?",
+        a: ["Indian", "Atlantic", "Arctic", "Pacific"],
+        correct: 3
+    }
+];
+
+let current = 0;
+let points = 0;
+
+function startQuiz() {
+    current = 0;
+    points = 0;
+    document.getElementById("start").style.display = "none";
+    document.getElementById("result").innerText = "";
+    showQuestion();
+}
+
+function showQuestion() {
+    if (current >= questions.length) {
+        document.getElementById("question").innerText = "Quiz Completed!";
+        document.getElementById("answers").innerHTML = "";
+        document.getElementById("score").innerText = "";
+        document.getElementById("result").innerText =
+            "Your Score: " + points + " / " + questions.length;
+        document.getElementById("start").innerText = "Play Again";
+        document.getElementById("start").style.display = "block";
+        return;
+    }
+
+    let q = questions[current];
+    document.getElementById("question").innerText =
+        (current + 1) + ". " + q.q;
+
+    document.getElementById("score").innerText =
+        "Score: " + points;
+
+    let html = "";
+    q.a.forEach((answer, index) => {
+        html += `<button onclick="checkAnswer(${index})">${answer}</button>`;
+    });
+
+    document.getElementById("answers").innerHTML = html;
+}
+
+function checkAnswer(index) {
+    if (index === questions[current].correct) {
+        points++;
+    }
+    current++;
+    showQuestion();
+}
+</script>
+
+</body>
+</html>
